@@ -46,16 +46,6 @@ class GeminiCliBlock(BlockDefinition):
     """Autonomous block implementation for `GeminiCliBlock`."""
     kind = "gemini_cli"
 
-    def ui_assets(self, surface: str = "modal") -> list[dict[str, str]]:
-        """Return Gemini CLI owned UI assets for the requested surface."""
-
-        if surface == "modal":
-            return [
-                {"kind": "css", "path": "assets/css/block_modal.css"},
-                {"kind": "js", "path": "assets/js/block_modal.js"},
-            ]
-        return []
-
     def render_node_card(self, *, node: dict[str, Any], payload: dict[str, Any] | None = None) -> dict[str, Any]:
         """Render the Gemini CLI canvas card from the block-owned template."""
 
