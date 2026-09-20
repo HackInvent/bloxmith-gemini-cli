@@ -430,14 +430,14 @@ class GeminiCliBlock(BlockDefinition):
                 '<label>Instruction</label>'
                 '<textarea data-gemini-modal-instruction data-block-output-field="instruction" '
                 f'data-block-output-port-id="{escape(str(port_id), quote=True)}" rows="24" spellcheck="false" '
-                'placeholder="Decris ce que Gemini CLI doit produire avec les inputs recus.">'
+                'placeholder="Describe what Gemini CLI must produce from the received inputs.">'
                 f'{escape(instruction)}'
                 '</textarea>'
                 '</div>'
                 '</div>'
                 '<aside class="gemini-reference-panel">'
                 '<div class="ports-editor-header"><span class="group-label">Inputs disponibles</span></div>'
-                '<p class="field-hint">Les inputs sont inclus automatiquement dans le prompt.</p>'
+                '<p class="field-hint">Inputs are included in the prompt automatically.</p>'
                 f'{self._render_input_references(node)}'
                 '</aside>'
                 '</div>'
@@ -544,7 +544,7 @@ class GeminiCliBlock(BlockDefinition):
             f'min="1" max="{MAX_PROMPT_CHARS}" step="1000" value="{config["max_prompt_chars"]}" />'
             '</div>'
             '</div>'
-            '<p class="field-hint">Le runtime lance <code>gemini -p &lt;prompt&gt;</code>. Le modele et les arguments additionnels sont optionnels.</p>'
+            '<p class="field-hint">The runtime runs <code>gemini -p &lt;prompt&gt;</code>. The model and the extra arguments are optional.</p>'
         )
 
     def _render_title_field(self, title: str) -> str:
@@ -552,7 +552,7 @@ class GeminiCliBlock(BlockDefinition):
 
         return (
             '<div class="field-group">'
-            '<label>Nom du bloc</label>'
+            '<label>Block name</label>'
             f'<input data-block-title-field type="text" autocomplete="off" value="{escape(title, quote=True)}" />'
             '</div>'
         )
@@ -562,7 +562,7 @@ class GeminiCliBlock(BlockDefinition):
 
         inputs = node.get("inputs") if isinstance(node.get("inputs"), list) else []
         if not inputs:
-            return '<div class="ports-editor-empty">Aucune entree disponible.</div>'
+            return '<div class="ports-editor-empty">No input available.</div>'
         rows: list[str] = []
         for index, port in enumerate(inputs):
             if not isinstance(port, dict):
@@ -601,13 +601,13 @@ class GeminiCliBlock(BlockDefinition):
             '<div class="gemini-last-command-layout">'
             '<div class="gemini-last-command-header">'
             '<div>'
-            '<span class="group-label">Derniere commande</span>'
+            '<span class="group-label">Last command</span>'
             '<h3>Last cmd</h3>'
-            '<p>Commande Gemini CLI preparee par le runtime pour la derniere execution.</p>'
+            '<p>Gemini CLI command prepared by the runtime for the last execution.</p>'
             '</div>'
             f'<button class="ghost-btn gemini-last-command-copy{command_class}" data-block-modal-copy="#{command_source_id}" type="button">Copier</button>'
             '</div>'
-            f'<p class="gemini-last-command-empty{empty_class}">Aucune commande Gemini CLI enregistree pour ce bloc.</p>'
+            f'<p class="gemini-last-command-empty{empty_class}">No Gemini CLI command recorded for this block.</p>'
             f'<pre class="gemini-last-command-output{command_class}" id="{command_source_id}" data-block-modal-copy-source>{escape(command)}</pre>'
             '</div>'
             '</section>'

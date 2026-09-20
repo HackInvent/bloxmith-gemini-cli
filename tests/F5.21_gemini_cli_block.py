@@ -159,7 +159,7 @@ def run_gemini_cli_case(runtime_mode: str) -> None:
 
     with fake_gemini_cli(response_text=f"fake gemini {runtime_mode}") as capture_path:
         with isolated_server() as server:
-            # Les surfaces sont des assets de release : le bundled kind n'en sert aucun.
+            # Surfaces are release assets: a bundled kind serves none of them.
             model = install_test_package(server, "gemini_cli")
             key = quote(release_key(model), safe="")
             served = lambda payload, suffix: next(
@@ -180,15 +180,15 @@ def run_gemini_cli_case(runtime_mode: str) -> None:
             run = wait_for_run_terminal(server, str(created.get("run_id") or ""), timeout_sec=20)
 
         calls = [json.loads(line) for line in capture_path.read_text(encoding="utf-8").splitlines() if line.strip()]
-        expect(run.get("status") == "success", f"Le run Gemini CLI {runtime_mode} doit reussir.")
+        expect(run.get("status") == "success", f"The Gemini CLI {runtime_mode} run must succeed.")
         expect(run.get("output_values", {}).get("gemini-cli-1:1", {}).get("value").strip() == f"fake gemini {runtime_mode}", "stdout Gemini CLI incorrect.")
         argv = calls[-1].get("argv", []) if calls else []
         expect("-p" in argv, "Gemini CLI doit etre appele avec -p.")
-        expect(argv[:2] == ["-m", "gemini-test-model"], "Le modele configure doit etre transmis avec -m.")
+        expect(argv[:2] == ["-m", "gemini-test-model"], "The configured model must be passed with -m.")
         expect("--output-format" in argv and "json" in argv, "Les arguments additionnels doivent etre transmis.")
         prompt = str(calls[-1].get("prompt") or "")
-        expect("hello gemini" in prompt, "Le prompt Gemini CLI doit contenir l'input texte.")
-        expect("Return a concise answer" in prompt, "Le prompt Gemini CLI doit contenir l'instruction.")
+        expect("hello gemini" in prompt, "The Gemini CLI prompt must contain the 'input texte.")
+        expect("Return a concise answer" in prompt, "The Gemini CLI prompt must contain the 'instruction.")
         logs = "\n".join(run.get("node_logs", {}).get("gemini-cli-1", []))
         expect("[gemini-cli-cmd]" in logs and " -p " in logs, "Les logs doivent exposer la commande Gemini CLI avec -p.")
 
@@ -210,11 +210,11 @@ def test_multiple_outputs_and_prompt_guard() -> None:
             run = wait_for_run_terminal(server, str(created.get("run_id") or ""), timeout_sec=20)
 
         calls = [json.loads(line) for line in capture_path.read_text(encoding="utf-8").splitlines() if line.strip()]
-        expect(run.get("status") == "success", "Le run multi-output Gemini CLI doit reussir.")
-        expect(len(calls) == 2, "Gemini CLI doit etre appele une fois par sortie.")
-        expect(run.get("output_values", {}).get("gemini-cli-1:2", {}).get("value").strip() == "multi", "La sortie 2 doit publier stdout.")
+        expect(run.get("status") == "success", "The multi-output Gemini CLI run must succeed.")
+        expect(len(calls) == 2, "Gemini CLI must be called once per output.")
+        expect(run.get("output_values", {}).get("gemini-cli-1:2", {}).get("value").strip() == "multi", "Output 2 must publish stdout.")
         result = run.get("results", {}).get("gemini-cli-1", {})
-        expect("last_gemini_command" in str(result), "La metadata doit conserver la derniere commande Gemini CLI.")
+        expect("last_gemini_command" in str(result), "The metadata must keep the last Gemini CLI command.")
 
     block = GeminiCliBlock()
     result = block.execute_runtime(
@@ -233,8 +233,8 @@ def test_multiple_outputs_and_prompt_guard() -> None:
             run_dir=ROOT,
         )
     )
-    expect(result.status == "failed", "Un prompt trop long doit etre refuse avant execution.")
-    expect("trop long" in result.error, "Le message d'erreur doit expliquer la limite de prompt.")
+    expect(result.status == "failed", "A prompt that is too long must be refused before execution.")
+    expect("trop long" in result.error, "The error message must explain the prompt limit.")
 
 
 def test_gemini_cli_ui_contract() -> None:
@@ -249,19 +249,19 @@ def test_gemini_cli_ui_contract() -> None:
 
     expect("cw-gemini-cli-modal" in html, "Le modal Gemini CLI doit venir du bloc.")
     expect('data-block-runtime-refresh="autonomous"' in html, "Le modal Gemini CLI doit gerer son refresh runtime.")
-    expect('data-gemini-tab-id="output-1"' in html, "Le modal doit exposer l'onglet instruction de sortie.")
+    expect('data-gemini-tab-id="output-1"' in html, "The modal must expose the output instruction tab.")
     expect('data-gemini-tab-id="attributes"' in html, "Le modal doit exposer l'onglet Attributs.")
     expect('data-gemini-tab-id="last-cmd"' in html, "Le modal doit exposer l'onglet Last cmd.")
     expect('data-block-output-field="instruction"' in html, "L'instruction doit rester liee a output.instruction.")
-    expect('data-block-config-field="gemini_binary"' in html, "Le binaire Gemini doit etre editable.")
-    expect('data-block-config-field="model"' in html, "Le modele Gemini doit etre editable.")
+    expect('data-block-config-field="gemini_binary"' in html, "The Gemini binary must be editable.")
+    expect('data-block-config-field="model"' in html, "The Gemini model must be editable.")
     expect('data-block-config-field="extra_args"' in html, "Les arguments additionnels doivent etre editables.")
     expect(".gemini-modal-panel[hidden]" in css, "Le CSS doit cacher les panels inactifs.")
     expect("export function mount" in js, "Le JS doit monter le modal via le registre block UI.")
 
     inspector = render_block_inspector_panel("gemini_cli", {"node": node})
     inspector_html = str(inspector.get("html") or "")
-    expect("cw-gemini-cli-inspector" in inspector_html, "L'inspector Gemini CLI doit venir du bloc.")
+    expect("cw-gemini-cli-inspector" in inspector_html, "L'Gemini CLI inspector must come from the block.")
     expect('data-block-output-field="instruction"' in inspector_html, "L'inspector doit editer l'instruction.")
 
     card = render_block_node_card("gemini_cli", {"node": node})
